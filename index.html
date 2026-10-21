@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AgroCaldas - Gestión Agrícola | Anserma, Caldas</title>
+  <meta name="description" content="Sistema integral de gestión de fincas, cultivos, siembras, cosechas, inventarios, finanzas y calendario agrícola para Anserma, Caldas, Colombia.">
+  <meta name="theme-color" content="#15803d">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2224%22 fill=%22%2315803d%22/><text y=%2268%22 x=%2250%22 font-size=%2260%22 text-anchor=%22middle%22>🌱</text></svg>">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="app-layout">
+
+    <!-- Overlay para menú móvil -->
+    <div id="mobile-drawer-overlay" class="modal-overlay" style="z-index: 39; backdrop-filter: blur(2px);"></div>
+
+    <!-- Barra Lateral (Sidebar) de Escritorio y Drawer Móvil -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="brand-badge" data-view-target="dashboard">
+          <div class="brand-logo-icon">🌿</div>
+          <div class="brand-info">
+            <h1>AgroCaldas</h1>
+            <span>Anserma • Caldas</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Principal</div>
+        
+        <button class="nav-item active" data-view-target="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Panel de Control</span>
+        </button>
+
+        <button class="nav-item" data-view-target="fincas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Fincas y Lotes</span>
+        </button>
+
+        <button class="nav-item" data-view-target="cultivos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12c0-2.8 1.15-5.33 3-7.14"/><path d="M12 2c0 6-4 10-10 10"/><path d="M12 22V12"/></svg>
+          <span>Siembras y Cultivos</span>
+        </button>
+
+        <button class="nav-item" data-view-target="cosechas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+          <span>Cosechas (@ y Kg)</span>
+        </button>
+
+        <div class="nav-section-title">Operaciones</div>
+
+        <button class="nav-item" data-view-target="inventario">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+          <span>Insumos y Stock</span>
+        </button>
+
+        <button class="nav-item" data-view-target="finanzas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          <span>Gastos e Ingresos</span>
+        </button>
+
+        <button class="nav-item" data-view-target="calendario">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>Calendario Agrícola</span>
+        </button>
+
+        <div class="nav-section-title">Soporte y Ajustes</div>
+
+        <button class="nav-item" data-view-target="alertas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span>Alertas y Sanidad</span>
+          <span class="nav-badge danger" id="sidebar-alert-badge" style="display: none;">0</span>
+        </button>
+
+        <button class="nav-item" data-view-target="configuracion">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Copia y Respaldo</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-location-card">
+          <div class="location-icon">📍</div>
+          <div class="location-text">
+            <strong>Anserma, Caldas</strong>
+            <span>1.790 msnm • Cordillera Occidental</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Contenedor Principal -->
+    <main class="app-main">
+      <!-- Encabezado Superior -->
+      <header class="app-header">
+        <div class="header-left">
+          <button class="mobile-toggle-btn" id="mobile-menu-toggle" aria-label="Abrir menú">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+
+          <!-- Selector de Finca Activa -->
+          <div class="farm-selector-wrapper">
+            <label for="global-farm-select">Finca:</label>
+            <select id="global-farm-select" class="farm-select">
+              <option value="todas">Todas las Fincas</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Widget Clima de Anserma -->
+          <button class="weather-chip" id="header-weather-chip" title="Ver información del tiempo en Anserma, Caldas">
+            <span class="weather-icon">⛅</span>
+            <span class="weather-label"><strong>20°C</strong> Anserma</span>
+          </button>
+
+          <!-- Campana de Alertas -->
+          <button class="icon-btn" id="header-alert-btn" aria-label="Alertas">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="icon-badge" id="header-alert-badge" style="display: none;">0</span>
+          </button>
+
+          <!-- Botón Rápido de Acción (+) -->
+          <button class="btn btn-primary btn-sm" id="quick-action-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span class="desktop-only">Acción Rápida</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Área Dinámica de Contenido -->
+      <section class="content-area" id="main-content-view">
+        <!-- Se renderiza reactivamente mediante JavaScript -->
+      </section>
+    </main>
+
+    <!-- Barra de Navegación Inferior para Móviles -->
+    <nav class="mobile-nav-bar">
+      <button class="mobile-nav-item active" data-view-target="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>Inicio</span>
+      </button>
+
+      <button class="mobile-nav-item" data-view-target="cultivos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0 1 10 10c0 5.52-4.48 10-10 10S2 17.52 2 12c0-2.8 1.15-5.33 3-7.14"/><path d="M12 22V12"/></svg>
+        <span>Cultivos</span>
+      </button>
+
+      <button class="mobile-nav-item" data-view-target="cosechas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+        <span>Cosechas</span>
+      </button>
+
+      <button class="mobile-nav-item" data-view-target="finanzas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>Finanzas</span>
+      </button>
+
+      <button class="mobile-nav-item" data-view-target="calendario">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>Calendario</span>
+      </button>
+    </nav>
+
+    <!-- Modal Global Reutilizable para todos los formularios -->
+    <div class="modal-overlay" id="global-modal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modal-title">Título del Formulario</h3>
+          <button class="modal-close-btn" id="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-body">
+          <!-- Campos dinámicos -->
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline" id="modal-cancel-btn">Cancelar</button>
+          <button class="btn btn-primary" id="modal-save-btn">Guardar Información</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenedor para Notificaciones Toast -->
+    <div class="toast-container" id="toast-container"></div>
+
+  </div>
+
+  <!-- Registro de Service Worker para funcionamiento sin conexión (Solo en HTTP/HTTPS) -->
+  <script>
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => {
+          console.log('ServiceWorker no disponible:', err);
+        });
+      });
+    }
+  </script>
+
+  <!-- Módulos de la Aplicación (Autónomo para file:// y http://) -->
+  <script src="js/agrocaldas.js"></script>
+
+</body>
+</html>
