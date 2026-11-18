@@ -835,21 +835,23 @@ class Store {
   }
 
   saveFinca(fincaData) {
+    let item;
     if (fincaData.id) {
       const idx = this.data.fincas.findIndex(f => f.id === fincaData.id);
       if (idx !== -1) {
         this.data.fincas[idx] = { ...this.data.fincas[idx], ...fincaData };
+        item = this.data.fincas[idx];
       }
     } else {
-      const newFinca = {
+      item = {
         id: 'f-' + Date.now(),
         fechaRegistro: new Date().toISOString().slice(0, 10),
         ...fincaData
       };
-      this.data.fincas.push(newFinca);
+      this.data.fincas.push(item);
     }
     this.save();
-    return true;
+    return item;
   }
 
   deleteFinca(id) {
@@ -870,20 +872,22 @@ class Store {
   }
 
   saveLote(loteData) {
+    let item;
     if (loteData.id) {
       const idx = this.data.lotes.findIndex(l => l.id === loteData.id);
       if (idx !== -1) {
         this.data.lotes[idx] = { ...this.data.lotes[idx], ...loteData };
+        item = this.data.lotes[idx];
       }
     } else {
-      const newLote = {
+      item = {
         id: 'l-' + Date.now(),
         ...loteData
       };
-      this.data.lotes.push(newLote);
+      this.data.lotes.push(item);
     }
     this.save();
-    return true;
+    return item;
   }
 
   deleteLote(id) {
@@ -894,20 +898,22 @@ class Store {
   }
 
   saveCultivo(cultivoData) {
+    let item;
     if (cultivoData.id) {
       const idx = this.data.cultivos.findIndex(c => c.id === cultivoData.id);
       if (idx !== -1) {
         this.data.cultivos[idx] = { ...this.data.cultivos[idx], ...cultivoData };
+        item = this.data.cultivos[idx];
       }
     } else {
-      const newCultivo = {
+      item = {
         id: 'c-' + Date.now(),
         ...cultivoData
       };
-      this.data.cultivos.push(newCultivo);
+      this.data.cultivos.push(item);
     }
     this.save();
-    return true;
+    return item;
   }
 
   deleteCultivo(id) {
@@ -1044,21 +1050,23 @@ class Store {
   }
 
   saveLabor(laborData) {
+    let item;
     if (laborData.id) {
       const idx = this.data.calendario.findIndex(c => c.id === laborData.id);
       if (idx !== -1) {
         this.data.calendario[idx] = { ...this.data.calendario[idx], ...laborData };
+        item = this.data.calendario[idx];
       }
     } else {
-      const newLabor = {
+      item = {
         id: 'cal-' + Date.now(),
         estado: 'pendiente',
         ...laborData
       };
-      this.data.calendario.unshift(newLabor);
+      this.data.calendario.unshift(item);
     }
     this.save();
-    return true;
+    return item;
   }
 
   toggleLaborStatus(id) {
@@ -1523,6 +1531,7 @@ class AgroApp {
   }
 
   async init() {
+    this.initDeviceMode();
     this.bindGlobalEvents();
     this.populateFarmSelector();
     this.renderCurrentView();
@@ -1535,6 +1544,93 @@ class AgroApp {
     });
 
     this.loadWeather();
+  }
+
+  initDeviceMode() {
+    const savedMode = localStorage.getItem('agrocaldas_device_mode');
+    if (!savedMode) {
+      // Primera visita: por defecto modo celular y desplegar encuesta de formato con Cafecito
+      this.setDeviceMode('mobile', false);
+      setTimeout(() => {
+        this.openDeviceSelectorModal(true);
+      }, 550);
+    } else {
+      this.setDeviceMode(savedMode, false);
+    }
+  }
+
+  setDeviceMode(mode, save = true) {
+    if (save) {
+      localStorage.setItem('agrocaldas_device_mode', mode);
+    }
+    const iconSpan = document.getElementById('device-mode-icon');
+    const textSpan = document.getElementById('device-mode-text');
+
+    if (mode === 'mobile') {
+      document.body.classList.add('device-mode-mobile');
+      document.body.classList.remove('device-mode-tablet');
+      if (iconSpan) iconSpan.textContent = '📱';
+      if (textSpan) textSpan.textContent = 'Celular';
+    } else {
+      document.body.classList.remove('device-mode-mobile');
+      document.body.classList.add('device-mode-tablet');
+      if (iconSpan) iconSpan.textContent = '💻';
+      if (textSpan) textSpan.textContent = 'Tablet / PC';
+    }
+  }
+
+  openDeviceSelectorModal(isFirstWelcome = false) {
+    const currentMode = localStorage.getItem('agrocaldas_device_mode') || 'mobile';
+
+    const bodyHtml = `
+      <div class="cafecito-bubble-container" style="margin-bottom: 1.25rem;">
+        <div class="cafecito-bubble-avatar">
+          <img src="img/cafecito_avatar_hd.png" alt="Cafecito">
+        </div>
+        <div class="cafecito-bubble-text">
+          <div class="cafecito-bubble-name">Cafecito te pregunta ☕</div>
+          <div class="cafecito-bubble-msg">
+            ${isFirstWelcome 
+              ? '¡Hola caficultor! Bienvenido a AgroCaldas en Anserma. ¿En qué formato prefieres ver y usar la aplicación?' 
+              : '¿Qué formato de visualización prefieres usar en este momento?'}
+          </div>
+          <div class="cafecito-bubble-sub">
+            Puedes cambiar de formato en cualquier momento desde el botón superior "📱 Celular / 💻 Tablet".
+          </div>
+        </div>
+      </div>
+
+      <div class="device-choice-grid">
+        <div class="device-choice-card ${currentMode === 'mobile' ? 'active' : ''}" id="choice-mode-mobile">
+          <div class="device-choice-icon">📱</div>
+          <h4>Modo Celular / Móvil</h4>
+          <p>Formato vertical táctil, barra de navegación inferior, botones grandes fáciles de pulsar en el cafetal o lote.</p>
+          <span class="badge badge-success" style="margin-top: 0.5rem;">Recomendado</span>
+        </div>
+
+        <div class="device-choice-card ${currentMode === 'tablet' ? 'active' : ''}" id="choice-mode-tablet">
+          <div class="device-choice-icon">💻</div>
+          <h4>Modo Tablet / Computador</h4>
+          <p>Vista panorámica de escritorio con menú lateral fijo para administración, balances y reportes amplios.</p>
+          <span class="badge badge-neutral" style="margin-top: 0.5rem;">Pantalla Completa</span>
+        </div>
+      </div>
+    `;
+
+    this.openModal('Formato de Visualización', bodyHtml, () => true);
+
+    const modal = document.getElementById('global-modal');
+    document.getElementById('choice-mode-mobile')?.addEventListener('click', () => {
+      this.setDeviceMode('mobile', true);
+      this.showToast('Formato Celular activado 📱', 'success');
+      modal?.classList.remove('active');
+    });
+
+    document.getElementById('choice-mode-tablet')?.addEventListener('click', () => {
+      this.setDeviceMode('tablet', true);
+      this.showToast('Formato Tablet / Computador activado 💻', 'success');
+      modal?.classList.remove('active');
+    });
   }
 
   async loadWeather() {
@@ -1638,6 +1734,14 @@ class AgroApp {
 
     document.getElementById('header-weather-chip')?.addEventListener('click', () => {
       this.openWeatherModal();
+    });
+
+    document.getElementById('btn-device-mode')?.addEventListener('click', () => {
+      this.openDeviceSelectorModal(false);
+    });
+
+    document.getElementById('header-cafecito-btn')?.addEventListener('click', () => {
+      this.openFarmWizardModal();
     });
   }
 
@@ -1775,6 +1879,31 @@ class AgroApp {
         </div>
       </div>
 
+      <!-- Banner Cafecito Hero de Bienvenida -->
+      <div class="mascot-hero-card">
+        <div class="mascot-hero-content">
+          <span class="mascot-tag">☕ Asesor Cafetero • Anserma, Caldas</span>
+          <h2 class="mascot-hero-title">
+            ${activeFarm ? `¡Hola! Produciendo en ${activeFarm.nombre}` : '¡Que haya buena cosecha en Anserma!'}
+          </h2>
+          <p class="mascot-hero-desc">
+            Soy <strong>Cafecito</strong>. Te acompaño a gestionar tus cafetales, cosechas en arrobas (@), control fitosanitario de roya/broca y finanzas en las 17 veredas de Anserma.
+          </p>
+          <div class="mascot-hero-actions">
+            <button class="btn-hero-primary" id="btn-hero-encuesta-finca">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+              <span>+ Encuesta para Añadir Finca</span>
+            </button>
+            <button class="btn-hero-secondary" id="btn-hero-clima-anserma">
+              <span>⛅ Clima y Consejos de Anserma</span>
+            </button>
+          </div>
+        </div>
+        <div class="mascot-hero-image-wrap">
+          <img src="img/cafecito_hero.png" alt="Cafecito Mascota Oficial" class="mascot-hero-img">
+        </div>
+      </div>
+
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-icon-wrapper">🌱</div>
@@ -1903,6 +2032,8 @@ class AgroApp {
     renderFinancialBarChart('dashboard-financial-chart', finanzas);
     renderCropsDonutChart('dashboard-crops-donut', lotes);
 
+    document.getElementById('btn-hero-encuesta-finca')?.addEventListener('click', () => this.openFarmWizardModal());
+    document.getElementById('btn-hero-clima-anserma')?.addEventListener('click', () => this.openWeatherModal());
     document.getElementById('btn-quick-cosecha')?.addEventListener('click', () => this.openCosechaModal());
     document.getElementById('btn-quick-gasto')?.addEventListener('click', () => this.openFinanzaModal());
     document.getElementById('btn-ver-todas-finanzas')?.addEventListener('click', () => this.switchView('finanzas'));
@@ -1937,9 +2068,12 @@ class AgroApp {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg>
             Nuevo Lote
           </button>
-          <button class="btn btn-primary" id="btn-nueva-finca">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
-            Nueva Finca
+          <button class="btn btn-primary" id="btn-nueva-finca-wizard" style="background: linear-gradient(135deg, #15803d, #16a34a);">
+            <img src="img/cafecito_avatar_hd.png" alt="Cafecito" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover; border: 1px solid #fff;">
+            + Encuesta Añadir Finca
+          </button>
+          <button class="btn btn-outline" id="btn-nueva-finca" title="Formulario Clásico">
+            + Rápida
           </button>
         </div>
       </div>
@@ -1953,9 +2087,15 @@ class AgroApp {
 
       <div style="display: flex; flex-direction: column; gap: 1.75rem;">
         ${fincas.length === 0 ? `
-          <div class="card" style="text-align: center; padding: 3rem;">
-            <p style="color: #64748b; font-size: 1rem; margin-bottom: 1rem;">No hay fincas registradas aún.</p>
-            <button class="btn btn-primary" id="btn-empty-finca">Registrar Primera Finca</button>
+          <div class="cafecito-empty-state">
+            <img src="img/cafecito_hero.png" alt="Cafecito" class="cafecito-empty-img">
+            <h3 class="cafecito-empty-title">¡Aún no has registrado ninguna finca en Anserma!</h3>
+            <p class="cafecito-empty-desc">
+              Cafecito te guiará en una rápida encuesta para registrar tu predio con su vereda, fuentes de agua, beneficiadero y primer lote cultivado.
+            </p>
+            <button class="btn btn-primary" id="btn-empty-finca-wizard" style="padding: 0.75rem 1.5rem; font-weight: 700;">
+              + Iniciar Encuesta de Finca con Cafecito →
+            </button>
           </div>
         ` : fincas.filter(f => {
           if (!this.searchTerm) return true;
@@ -2042,6 +2182,8 @@ class AgroApp {
       </div>
     `;
 
+    document.getElementById('btn-nueva-finca-wizard')?.addEventListener('click', () => this.openFarmWizardModal());
+    document.getElementById('btn-empty-finca-wizard')?.addEventListener('click', () => this.openFarmWizardModal());
     document.getElementById('btn-nueva-finca')?.addEventListener('click', () => this.openFincaModal());
     document.getElementById('btn-empty-finca')?.addEventListener('click', () => this.openFincaModal());
     document.getElementById('btn-nuevo-lote')?.addEventListener('click', () => this.openLoteModal());
@@ -2112,8 +2254,10 @@ class AgroApp {
       </div>
 
       ${cultivos.length === 0 ? `
-        <div class="card" style="text-align: center; padding: 3rem;">
-          <p style="color: #64748b; margin-bottom: 1rem;">No hay registros de cultivos para la finca seleccionada.</p>
+        <div class="cafecito-empty-state">
+          <img src="img/cafecito_hero.png" alt="Cafecito" class="cafecito-empty-img">
+          <h3 class="cafecito-empty-title">¡Tu cafetal empieza aquí!</h3>
+          <p class="cafecito-empty-desc">No hay registros de cultivos para la finca seleccionada. Registra tu primera siembra de Café Castillo, Cenicafé 1 o frutales para controlar densidades y floraciones.</p>
           <button class="btn btn-primary" id="btn-empty-cultivo">Registrar Primera Siembra</button>
         </div>
       ` : `
@@ -2271,8 +2415,10 @@ class AgroApp {
       </div>
 
       ${cosechas.length === 0 ? `
-        <div class="card" style="text-align: center; padding: 3rem;">
-          <p style="color: #64748b; margin-bottom: 1rem;">No hay registros de cosechas en esta selección.</p>
+        <div class="cafecito-empty-state">
+          <img src="img/cafecito_hero.png" alt="Cafecito" class="cafecito-empty-img">
+          <h3 class="cafecito-empty-title">¡A recolectar café en Anserma!</h3>
+          <p class="cafecito-empty-desc">No hay cosechas registradas aún. Lleva la cuenta de cada arroba (@) de café pergamino y fruta recolectada con precios de venta y entregas a Coopcafé.</p>
           <button class="btn btn-primary" id="btn-empty-cosecha">Registrar Primera Cosecha</button>
         </div>
       ` : `
@@ -3128,6 +3274,672 @@ class AgroApp {
         closeModal();
       }
     };
+  }
+
+  // --- ENCUESTA INTERACTIVA DE FINCAS CON CAFECITO (WIZARD GUIADO) ---
+  openFarmWizardModal() {
+    let currentStep = 1;
+    const totalSteps = 5;
+
+    // Estado persistente del formulario guiado
+    const wizardData = {
+      nombre: '',
+      vereda: VEREDAS_ANSERMA[0] || 'Bellavista',
+      propietario: '',
+      telefono: '',
+      cedulaCafetera: '',
+      areaValor: 5,
+      unidadArea: 'Ha',
+      altitud: 1780,
+      topografia: 'Ladera media (típica Caldas)',
+      fuenteAgua: 'Acueducto veredal',
+      cultivo: 'Café',
+      variedad: 'Castillo',
+      plantasSembradas: 5000,
+      anoSiembra: 2023,
+      estadoCultivo: 'Producción óptima',
+      despulpadora: true,
+      tanqueTina: true,
+      marquesina: true,
+      bodega: true,
+      accesoWillys: true,
+      ventaCoopcafe: true,
+      nombreLote: 'Lote El Mirador',
+      areaLote: 3.2,
+      tipoSuelo: 'Franco-arenoso volcánico (Caldas)',
+      notas: ''
+    };
+
+    const modal = document.getElementById('global-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+    const saveBtn = document.getElementById('modal-save-btn');
+    const cancelBtn = document.getElementById('modal-cancel-btn');
+    const closeBtn = document.getElementById('modal-close-btn');
+
+    if (!modal) return;
+
+    saveBtn.style.display = 'none';
+    cancelBtn.style.display = 'none';
+
+    const closeModal = () => {
+      modal.classList.remove('active');
+      saveBtn.style.display = '';
+      cancelBtn.style.display = '';
+    };
+
+    closeBtn.onclick = closeModal;
+
+    const renderWizardStep = () => {
+      modalTitle.textContent = `Encuesta Predial con Cafecito (Paso ${currentStep} de ${totalSteps})`;
+      const progressPercent = Math.round((currentStep / totalSteps) * 100);
+
+      let stepContentHtml = '';
+
+      if (currentStep === 1) {
+        stepContentHtml = `
+          <div class="cafecito-bubble-container">
+            <div class="cafecito-bubble-avatar">
+              <img src="img/cafecito_avatar_hd.png" alt="Cafecito">
+            </div>
+            <div class="cafecito-bubble-text">
+              <div class="cafecito-bubble-name">Cafecito te saluda ☕</div>
+              <div class="cafecito-bubble-msg">
+                ¡Qué emoción conocer tu finca! Cuéntame cómo se llama tu predio y en cuál de las 17 veredas de Anserma está ubicado.
+              </div>
+              <div class="cafecito-bubble-sub">
+                Paso 1: Identificación y Ubicación en Anserma, Caldas
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group col-span-2">
+              <label class="form-label">Nombre de la Finca / Predio *</label>
+              <input type="text" id="wiz-nombre" class="form-control" placeholder="Ej: Finca La Esperanza" value="${wizardData.nombre}" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Vereda de Anserma, Caldas *</label>
+              <select id="wiz-vereda" class="form-control" required>
+                ${VEREDAS_ANSERMA.map(v => `
+                  <option value="${v}" ${wizardData.vereda === v ? 'selected' : ''}>Vereda ${v}</option>
+                `).join('')}
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Nombre del Caficultor / Propietario *</label>
+              <input type="text" id="wiz-propietario" class="form-control" placeholder="Ej: Don Gonzalo Ramírez" value="${wizardData.propietario}" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Teléfono o WhatsApp (Alertas / Contacto)</label>
+              <input type="tel" id="wiz-telefono" class="form-control" placeholder="Ej: 312 458 9210" value="${wizardData.telefono}">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Cédula Cafetera / Doc. Comité (Opcional)</label>
+              <input type="text" id="wiz-cedula" class="form-control" placeholder="Ej: 10.254.890" value="${wizardData.cedulaCafetera}">
+            </div>
+          </div>
+        `;
+      } else if (currentStep === 2) {
+        stepContentHtml = `
+          <div class="cafecito-bubble-container">
+            <div class="cafecito-bubble-avatar">
+              <img src="img/cafecito_avatar_hd.png" alt="Cafecito">
+            </div>
+            <div class="cafecito-bubble-text">
+              <div class="cafecito-bubble-name">Cafecito te orienta ☕</div>
+              <div class="cafecito-bubble-msg">
+                En Anserma el relieve y el agua son la vida del cafetal. Cuéntame cuánto mide tu terreno y cómo es su geografía.
+              </div>
+              <div class="cafecito-bubble-sub">
+                Paso 2: Área del Predio, Altitud y Fuentes Hídricas
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Extensión del Predio *</label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input type="number" step="0.1" id="wiz-area-valor" class="form-control" placeholder="Ej: 5" value="${wizardData.areaValor}" style="flex: 1;" required>
+                <select id="wiz-area-unidad" class="form-control" style="width: 140px;">
+                  <option value="Ha" ${wizardData.unidadArea === 'Ha' ? 'selected' : ''}>Hectáreas (Ha)</option>
+                  <option value="Cuadras" ${wizardData.unidadArea === 'Cuadras' ? 'selected' : ''}>Cuadras (cd)</option>
+                </select>
+              </div>
+              <small id="wiz-area-helper" style="color: #166534; font-size: 0.78rem; display: block; margin-top: 0.25rem;">
+                ${wizardData.unidadArea === 'Cuadras' 
+                  ? `Equivalente aprox: ${(wizardData.areaValor * 0.64).toFixed(2)} Hectáreas (1 cuadra = 0.64 Ha)` 
+                  : `${wizardData.areaValor} Hectáreas totales`}
+              </small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Altitud Promedio (m.s.n.m.)</label>
+              <input type="number" id="wiz-altitud" class="form-control" placeholder="1780" value="${wizardData.altitud}">
+              <small style="color: #64748b; font-size: 0.76rem;">Anserma promedio: 1.780 msnm (Cordillera Occidental)</small>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">Topografía Predominante del Terreno</label>
+              <div class="wizard-card-grid" id="grid-topografia">
+                <div class="wizard-option-card ${wizardData.topografia.includes('suave') ? 'selected' : ''}" data-value="Ondulada suave">
+                  <div class="wizard-option-icon">🟢</div>
+                  <div class="wizard-option-title">Ondulada suave</div>
+                  <small style="font-size: 0.72rem; color: #64748b;">Fácil tránsito</small>
+                </div>
+                <div class="wizard-option-card ${wizardData.topografia.includes('Ladera media') ? 'selected' : ''}" data-value="Ladera media (típica Caldas)">
+                  <div class="wizard-option-icon">🟡</div>
+                  <div class="wizard-option-title">Ladera Media</div>
+                  <small style="font-size: 0.72rem; color: #64748b;">Típica de Anserma</small>
+                </div>
+                <div class="wizard-option-card ${wizardData.topografia.includes('Pendiente') ? 'selected' : ''}" data-value="Pendiente fuerte / Quebrada">
+                  <div class="wizard-option-icon">🟠</div>
+                  <div class="wizard-option-title">Ladera Fuerte</div>
+                  <small style="font-size: 0.72rem; color: #64748b;">Siembra en curvas</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">Disponibilidad y Fuente de Agua</label>
+              <div class="wizard-card-grid" id="grid-agua">
+                <div class="wizard-option-card ${wizardData.fuenteAgua === 'Acueducto veredal' ? 'selected' : ''}" data-value="Acueducto veredal">
+                  <div class="wizard-option-icon">💧</div>
+                  <div class="wizard-option-title">Acueducto Veredal</div>
+                </div>
+                <div class="wizard-option-card ${wizardData.fuenteAgua === 'Nacimiento / Quebrada' ? 'selected' : ''}" data-value="Nacimiento / Quebrada">
+                  <div class="wizard-option-icon">🏞️</div>
+                  <div class="wizard-option-title">Nacimiento Propio</div>
+                </div>
+                <div class="wizard-option-card ${wizardData.fuenteAgua.includes('Mixta') ? 'selected' : ''}" data-value="Mixta (Acueducto + Nacimiento)">
+                  <div class="wizard-option-icon">🔄</div>
+                  <div class="wizard-option-title">Mixta (Ambas)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (currentStep === 3) {
+        stepContentHtml = `
+          <div class="cafecito-bubble-container">
+            <div class="cafecito-bubble-avatar">
+              <img src="img/cafecito_avatar_hd.png" alt="Cafecito">
+            </div>
+            <div class="cafecito-bubble-text">
+              <div class="cafecito-bubble-name">Cafecito cafetero ☕</div>
+              <div class="cafecito-bubble-msg">
+                ¡El café es nuestro orgullo! En Anserma el Castillo y Cenicafé 1 son las más recomendadas por su resistencia a la roya y calidad en taza. ¿Qué tienes sembrado?
+              </div>
+              <div class="cafecito-bubble-sub">
+                Paso 3: Cultivo Principal, Variedad y Número de Árboles
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group col-span-2">
+              <label class="form-label">Selecciona tu Cultivo y Variedad Principal *</label>
+              <div class="wizard-card-grid" id="grid-cultivo">
+                <div class="wizard-option-card ${wizardData.variedad === 'Castillo' ? 'selected' : ''}" data-cultivo="Café" data-variedad="Castillo">
+                  <div class="wizard-option-icon">☕</div>
+                  <div class="wizard-option-title">Café Castillo</div>
+                  <small style="font-size: 0.72rem; color: #166534;">Resistente roya</small>
+                </div>
+                <div class="wizard-option-card ${wizardData.variedad === 'Cenicafé 1' ? 'selected' : ''}" data-cultivo="Café" data-variedad="Cenicafé 1">
+                  <div class="wizard-option-icon">☕</div>
+                  <div class="wizard-option-title">Cenicafé 1</div>
+                  <small style="font-size: 0.72rem; color: #166534;">Alta productividad</small>
+                </div>
+                <div class="wizard-option-card ${wizardData.variedad === 'Colombia' ? 'selected' : ''}" data-cultivo="Café" data-variedad="Colombia">
+                  <div class="wizard-option-icon">☕</div>
+                  <div class="wizard-option-title">Variedad Colombia</div>
+                  <small style="font-size: 0.72rem; color: #64748b;">Tradicional</small>
+                </div>
+                <div class="wizard-option-card ${wizardData.variedad.includes('Borbón') ? 'selected' : ''}" data-cultivo="Café" data-variedad="Borbón Rosado / Geisha">
+                  <div class="wizard-option-icon">🌟</div>
+                  <div class="wizard-option-title">Café Especial</div>
+                  <small style="font-size: 0.72rem; color: #92400e;">Borbón / Geisha</small>
+                </div>
+                <div class="wizard-option-card ${wizardData.cultivo === 'Plátano' ? 'selected' : ''}" data-cultivo="Plátano" data-variedad="Dominico Hartón">
+                  <div class="wizard-option-icon">🍌</div>
+                  <div class="wizard-option-title">Plátano</div>
+                  <small style="font-size: 0.72rem; color: #64748b;">Dominico-Hartón</small>
+                </div>
+                <div class="wizard-option-card ${wizardData.cultivo === 'Aguacate' ? 'selected' : ''}" data-cultivo="Aguacate" data-variedad="Hass">
+                  <div class="wizard-option-icon">🥑</div>
+                  <div class="wizard-option-title">Aguacate Hass</div>
+                  <small style="font-size: 0.72rem; color: #64748b;">Exportación</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Número de Árboles / Plantas *</label>
+              <input type="number" id="wiz-plantas" class="form-control" placeholder="Ej: 5000" value="${wizardData.plantasSembradas}" required>
+              <small style="color: #64748b; font-size: 0.76rem;">Total de palos sembrados</small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Año de Siembra de este Cultivo</label>
+              <input type="number" id="wiz-ano-siembra" class="form-control" placeholder="2023" value="${wizardData.anoSiembra}">
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">Estado Fenológico y Productivo Actual</label>
+              <select id="wiz-estado-cultivo" class="form-control">
+                <option value="En levante / Crecimiento" ${wizardData.estadoCultivo.includes('levante') ? 'selected' : ''}>🌱 En levante (Menor a 18 meses, sin cosecha aún)</option>
+                <option value="Producción óptima" ${wizardData.estadoCultivo.includes('óptima') ? 'selected' : ''}>🌿 Producción óptima (2 a 6 años, plena cosecha)</option>
+                <option value="Requiere zoca o renovación" ${wizardData.estadoCultivo.includes('renovación') ? 'selected' : ''}>🍂 Requiere zoca o renovación (Mayor a 6 años)</option>
+              </select>
+            </div>
+          </div>
+        `;
+      } else if (currentStep === 4) {
+        stepContentHtml = `
+          <div class="cafecito-bubble-container">
+            <div class="cafecito-bubble-avatar">
+              <img src="img/cafecito_avatar_hd.png" alt="Cafecito">
+            </div>
+            <div class="cafecito-bubble-text">
+              <div class="cafecito-bubble-name">Cafecito te pregunta ☕</div>
+              <div class="cafecito-bubble-msg">
+                El beneficiadero y el secado marcan la diferencia entre un café corriente y un café de calidad superior. ¿Con qué infraestructura cuenta tu finca?
+              </div>
+              <div class="cafecito-bubble-sub">
+                Paso 4: Beneficiadero, Secado e Infraestructura Predial
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <label class="wizard-checkbox-item ${wizardData.despulpadora ? 'checked' : ''}">
+              <input type="checkbox" id="wiz-chk-despulpadora" ${wizardData.despulpadora ? 'checked' : ''}>
+              <div>
+                <strong>⚙️ Despulpadora Mecánica o Eléctrica</strong>
+                <div style="font-size: 0.78rem; color: #64748b;">Para beneficio húmedo oportuno el mismo día del corte</div>
+              </div>
+            </label>
+
+            <label class="wizard-checkbox-item ${wizardData.tanqueTina ? 'checked' : ''}">
+              <input type="checkbox" id="wiz-chk-tanquetina" ${wizardData.tanqueTina ? 'checked' : ''}>
+              <div>
+                <strong>🚿 Tanque Tina Tradicional o Ecomill Ecológico</strong>
+                <div style="font-size: 0.78rem; color: #64748b;">Fermentación y lavado limpio de café pergamino</div>
+              </div>
+            </label>
+
+            <label class="wizard-checkbox-item ${wizardData.marquesina ? 'checked' : ''}">
+              <input type="checkbox" id="wiz-chk-marquesina" ${wizardData.marquesina ? 'checked' : ''}>
+              <div>
+                <strong>☀️ Marquesina Parabólica o Secadero Solar</strong>
+                <div style="font-size: 0.78rem; color: #64748b;">Secado limpio hasta alcanzar 10% - 12% de humedad de exportación</div>
+              </div>
+            </label>
+
+            <label class="wizard-checkbox-item ${wizardData.bodega ? 'checked' : ''}">
+              <input type="checkbox" id="wiz-chk-bodega" ${wizardData.bodega ? 'checked' : ''}>
+              <div>
+                <strong>📦 Bodega Segura para Insumos y Fertilizantes</strong>
+                <div style="font-size: 0.78rem; color: #64748b;">Almacenamiento seco de Urea, DAP, KCL, fungicidas y herramientas</div>
+              </div>
+            </label>
+
+            <label class="wizard-checkbox-item ${wizardData.accesoWillys ? 'checked' : ''}">
+              <input type="checkbox" id="wiz-chk-acceso" ${wizardData.accesoWillys ? 'checked' : ''}>
+              <div>
+                <strong>🚙 Vía Carreteable para Campero Willys / Camión</strong>
+                <div style="font-size: 0.78rem; color: #64748b;">Entrada de abonos y salida de bultos de café hacia el pueblo</div>
+              </div>
+            </label>
+
+            <label class="wizard-checkbox-item ${wizardData.ventaCoopcafe ? 'checked' : ''}">
+              <input type="checkbox" id="wiz-chk-coopcafe" ${wizardData.ventaCoopcafe ? 'checked' : ''}>
+              <div>
+                <strong>🤝 Venta a la Cooperativa de Caficultores (Coopcafé Anserma)</strong>
+                <div style="font-size: 0.78rem; color: #64748b;">Comercialización institucional y reliquidación de factor de rendimiento</div>
+              </div>
+            </label>
+          </div>
+        `;
+      } else if (currentStep === 5) {
+        stepContentHtml = `
+          <div class="cafecito-bubble-container">
+            <div class="cafecito-bubble-avatar">
+              <img src="img/cafecito_avatar_hd.png" alt="Cafecito">
+            </div>
+            <div class="cafecito-bubble-text">
+              <div class="cafecito-bubble-name">Cafecito te felicita ☕</div>
+              <div class="cafecito-bubble-msg">
+                ¡Ya casi terminamos! Bauticemos tu primer lote para que todas las funciones de cosechas, costos y calendario queden listas.
+              </div>
+              <div class="cafecito-bubble-sub">
+                Paso 5: Bautizo y Configuración del Primer Lote Cultivado
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group col-span-2">
+              <label class="form-label">Nombre de tu Primer Lote *</label>
+              <input type="text" id="wiz-lote-nombre" class="form-control" placeholder="Ej: Lote El Mirador, Lote La Loma" value="${wizardData.nombreLote}" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Área de este Lote (Hectáreas) *</label>
+              <input type="number" step="0.1" id="wiz-lote-area" class="form-control" placeholder="Ej: 3.2" value="${wizardData.areaLote}" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Tipo de Suelo</label>
+              <select id="wiz-lote-suelo" class="form-control">
+                <option value="Franco-arenoso volcánico (Caldas)" selected>Franco-arenoso volcánico (Típico Caldas)</option>
+                <option value="Franco-arcilloso">Franco-arcilloso (Retiene humedad)</option>
+                <option value="Pedregoso / Quebrado">Pedregoso / Quebrado</option>
+              </select>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label">Metas de Cosecha o Notas Adicionales</label>
+              <textarea id="wiz-lote-notas" class="form-control" placeholder="Ej: Meta de 150 @ de CPS en la cosecha principal de octubre.">${wizardData.notas}</textarea>
+            </div>
+          </div>
+
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.85rem; margin-top: 1rem; font-size: 0.82rem; color: #166534;">
+            <strong>✓ Resumen que se creará automáticamente:</strong>
+            <ul style="margin: 0.35rem 0 0 1.25rem;">
+              <li>Finca: <strong>${wizardData.nombre || 'Nueva Finca'}</strong> en Vereda <strong>${wizardData.vereda}</strong>.</li>
+              <li>Lote: <strong>${wizardData.nombreLote}</strong> (${wizardData.areaLote} Ha).</li>
+              <li>Cultivo: <strong>${wizardData.cultivo} ${wizardData.variedad}</strong> (${wizardData.plantasSembradas.toLocaleString()} árboles).</li>
+              <li>Calendario: 1 labor fitosanitaria programada para Anserma.</li>
+            </ul>
+          </div>
+        `;
+      }
+
+      modalBody.innerHTML = `
+        <div class="wizard-progress-bar-wrap">
+          <div class="wizard-progress-bar-fill" style="width: ${progressPercent}%;"></div>
+        </div>
+
+        <div class="wizard-steps-indicator">
+          <span class="wizard-step-pill ${currentStep === 1 ? 'active' : ''}">1. Ubicación</span>
+          <span class="wizard-step-pill ${currentStep === 2 ? 'active' : ''}">2. Terreno</span>
+          <span class="wizard-step-pill ${currentStep === 3 ? 'active' : ''}">3. Cultivo</span>
+          <span class="wizard-step-pill ${currentStep === 4 ? 'active' : ''}">4. Beneficio</span>
+          <span class="wizard-step-pill ${currentStep === 5 ? 'active' : ''}">5. Lote</span>
+        </div>
+
+        ${stepContentHtml}
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
+          ${currentStep > 1 ? `
+            <button class="btn btn-outline" id="wiz-btn-prev">
+              ← Anterior
+            </button>
+          ` : `
+            <button class="btn btn-outline" id="wiz-btn-cancel">
+              Cancelar
+            </button>
+          `}
+
+          ${currentStep < totalSteps ? `
+            <button class="btn btn-primary" id="wiz-btn-next">
+              Siguiente Paso (${currentStep + 1}/${totalSteps}) →
+            </button>
+          ` : `
+            <button class="btn btn-primary" id="wiz-btn-finish" style="background: linear-gradient(135deg, #15803d, #16a34a); font-weight: 800; padding: 0.75rem 1.5rem;">
+              ✓ ¡Finalizar y Configurar mi Finca!
+            </button>
+          `}
+        </div>
+      `;
+
+      if (currentStep === 1) {
+        document.getElementById('wiz-btn-cancel')?.addEventListener('click', closeModal);
+      } else {
+        document.getElementById('wiz-btn-prev')?.addEventListener('click', () => {
+          saveCurrentStepInputs();
+          currentStep--;
+          renderWizardStep();
+        });
+      }
+
+      if (currentStep === 2) {
+        const areaInput = document.getElementById('wiz-area-valor');
+        const unitSelect = document.getElementById('wiz-area-unidad');
+        const helper = document.getElementById('wiz-area-helper');
+
+        const updateHelper = () => {
+          const val = parseFloat(areaInput.value) || 0;
+          if (unitSelect.value === 'Cuadras') {
+            const ha = (val * 0.64).toFixed(2);
+            helper.textContent = `Equivalente aprox: ${ha} Hectáreas (1 cuadra = 0.64 Ha)`;
+          } else {
+            helper.textContent = `${val} Hectáreas en total`;
+          }
+        };
+
+        areaInput?.addEventListener('input', updateHelper);
+        unitSelect?.addEventListener('change', updateHelper);
+
+        document.querySelectorAll('#grid-topografia .wizard-option-card').forEach(card => {
+          card.addEventListener('click', () => {
+            document.querySelectorAll('#grid-topografia .wizard-option-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            wizardData.topografia = card.dataset.value;
+          });
+        });
+
+        document.querySelectorAll('#grid-agua .wizard-option-card').forEach(card => {
+          card.addEventListener('click', () => {
+            document.querySelectorAll('#grid-agua .wizard-option-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            wizardData.fuenteAgua = card.dataset.value;
+          });
+        });
+      }
+
+      if (currentStep === 3) {
+        document.querySelectorAll('#grid-cultivo .wizard-option-card').forEach(card => {
+          card.addEventListener('click', () => {
+            document.querySelectorAll('#grid-cultivo .wizard-option-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            wizardData.cultivo = card.dataset.cultivo;
+            wizardData.variedad = card.dataset.variedad;
+          });
+        });
+      }
+
+      if (currentStep === 4) {
+        ['despulpadora', 'tanquetina', 'marquesina', 'bodega', 'acceso', 'coopcafe'].forEach(k => {
+          const chk = document.getElementById(`wiz-chk-${k}`);
+          chk?.addEventListener('change', (e) => {
+            const parentLabel = chk.closest('.wizard-checkbox-item');
+            if (e.target.checked) parentLabel?.classList.add('checked');
+            else parentLabel?.classList.remove('checked');
+          });
+        });
+      }
+
+      if (currentStep < totalSteps) {
+        document.getElementById('wiz-btn-next')?.addEventListener('click', () => {
+          if (!validateStep(currentStep)) return;
+          saveCurrentStepInputs();
+          currentStep++;
+          renderWizardStep();
+        });
+      } else {
+        document.getElementById('wiz-btn-finish')?.addEventListener('click', () => {
+          if (!validateStep(currentStep)) return;
+          saveCurrentStepInputs();
+          finalizeWizard();
+        });
+      }
+    };
+
+    const saveCurrentStepInputs = () => {
+      if (currentStep === 1) {
+        wizardData.nombre = document.getElementById('wiz-nombre')?.value.trim() || '';
+        wizardData.vereda = document.getElementById('wiz-vereda')?.value || 'Bellavista';
+        wizardData.propietario = document.getElementById('wiz-propietario')?.value.trim() || '';
+        wizardData.telefono = document.getElementById('wiz-telefono')?.value.trim() || '';
+        wizardData.cedulaCafetera = document.getElementById('wiz-cedula')?.value.trim() || '';
+      } else if (currentStep === 2) {
+        wizardData.areaValor = parseFloat(document.getElementById('wiz-area-valor')?.value) || 1;
+        wizardData.unidadArea = document.getElementById('wiz-area-unidad')?.value || 'Ha';
+        wizardData.altitud = parseInt(document.getElementById('wiz-altitud')?.value, 10) || 1780;
+      } else if (currentStep === 3) {
+        wizardData.plantasSembradas = parseInt(document.getElementById('wiz-plantas')?.value, 10) || 1000;
+        wizardData.anoSiembra = parseInt(document.getElementById('wiz-ano-siembra')?.value, 10) || 2023;
+        wizardData.estadoCultivo = document.getElementById('wiz-estado-cultivo')?.value || 'Producción óptima';
+      } else if (currentStep === 4) {
+        wizardData.despulpadora = !!document.getElementById('wiz-chk-despulpadora')?.checked;
+        wizardData.tanqueTina = !!document.getElementById('wiz-chk-tanquetina')?.checked;
+        wizardData.marquesina = !!document.getElementById('wiz-chk-marquesina')?.checked;
+        wizardData.bodega = !!document.getElementById('wiz-chk-bodega')?.checked;
+        wizardData.accesoWillys = !!document.getElementById('wiz-chk-acceso')?.checked;
+        wizardData.ventaCoopcafe = !!document.getElementById('wiz-chk-coopcafe')?.checked;
+      } else if (currentStep === 5) {
+        wizardData.nombreLote = document.getElementById('wiz-lote-nombre')?.value.trim() || 'Lote Principal';
+        wizardData.areaLote = parseFloat(document.getElementById('wiz-lote-area')?.value) || 1;
+        wizardData.tipoSuelo = document.getElementById('wiz-lote-suelo')?.value || 'Franco-arenoso volcánico (Caldas)';
+        wizardData.notas = document.getElementById('wiz-lote-notas')?.value.trim() || '';
+      }
+    };
+
+    const validateStep = (step) => {
+      if (step === 1) {
+        const nombre = document.getElementById('wiz-nombre')?.value.trim();
+        const prop = document.getElementById('wiz-propietario')?.value.trim();
+        if (!nombre) {
+          alert('Por favor escribe el nombre de tu finca o predio.');
+          return false;
+        }
+        if (!prop) {
+          alert('Por favor escribe el nombre del caficultor o propietario.');
+          return false;
+        }
+      } else if (step === 2) {
+        const area = parseFloat(document.getElementById('wiz-area-valor')?.value);
+        if (isNaN(area) || area <= 0) {
+          alert('Por favor ingresa una extensión de terreno válida mayor a cero.');
+          return false;
+        }
+      } else if (step === 3) {
+        const plantas = parseInt(document.getElementById('wiz-plantas')?.value, 10);
+        if (isNaN(plantas) || plantas <= 0) {
+          alert('Por favor ingresa el número estimado de plantas o árboles.');
+          return false;
+        }
+      } else if (step === 5) {
+        const nl = document.getElementById('wiz-lote-nombre')?.value.trim();
+        const al = parseFloat(document.getElementById('wiz-lote-area')?.value);
+        if (!nl) {
+          alert('Por favor ingresa un nombre para tu primer lote.');
+          return false;
+        }
+        if (isNaN(al) || al <= 0) {
+          alert('Por favor ingresa un área válida para el lote.');
+          return false;
+        }
+      }
+      return true;
+    };
+
+    const finalizeWizard = () => {
+      const areaHectareas = wizardData.unidadArea === 'Cuadras'
+        ? Number((wizardData.areaValor * 0.64).toFixed(2))
+        : Number(wizardData.areaValor);
+
+      const nuevaFinca = agroStore.saveFinca({
+        nombre: wizardData.nombre,
+        vereda: wizardData.vereda,
+        areaTotal: areaHectareas,
+        propietario: wizardData.propietario,
+        telefono: wizardData.telefono,
+        altitud: wizardData.altitud,
+        cedulaCafetera: wizardData.cedulaCafetera,
+        infraestructura: {
+          despulpadora: wizardData.despulpadora,
+          tanqueTina: wizardData.tanqueTina,
+          marquesina: wizardData.marquesina,
+          bodega: wizardData.bodega,
+          accesoWillys: wizardData.accesoWillys,
+          ventaCoopcafe: wizardData.ventaCoopcafe
+        },
+        notas: `Finca registrada con la Encuesta de Cafecito. Fuente de agua: ${wizardData.fuenteAgua}. Topografía: ${wizardData.topografia}. ${wizardData.notas}`
+      });
+
+      const nuevoLote = agroStore.saveLote({
+        fincaId: nuevaFinca.id,
+        nombre: wizardData.nombreLote,
+        area: Number(wizardData.areaLote),
+        cultivoPrincipal: `${wizardData.cultivo} ${wizardData.variedad}`,
+        topografia: wizardData.topografia,
+        tipoSuelo: wizardData.tipoSuelo
+      });
+
+      const nuevoCultivo = agroStore.saveCultivo({
+        fincaId: nuevaFinca.id,
+        loteId: nuevoLote.id,
+        cultivo: wizardData.cultivo,
+        variedad: wizardData.variedad,
+        fechaSiembra: `${wizardData.anoSiembra}-03-15`,
+        plantasSembradas: Number(wizardData.plantasSembradas),
+        densidad: Math.round(Number(wizardData.plantasSembradas) / Math.max(0.1, Number(wizardData.areaLote))),
+        estado: wizardData.estadoCultivo,
+        fechaCosechaEstimada: '2026-10-15',
+        rendimientoEsperadoArrobas: Math.round(Number(wizardData.plantasSembradas) * 0.15),
+        notas: 'Siembra inicial caracterizada mediante la encuesta de AgroCaldas'
+      });
+
+      agroStore.saveLabor({
+        fincaId: nuevaFinca.id,
+        loteId: nuevoLote.id,
+        labor: 'Monitoreo de Broca y Roya',
+        fechaProgramada: new Date().toISOString().slice(0, 10),
+        responsable: wizardData.propietario,
+        estado: 'pendiente',
+        observaciones: `Monitoreo inicial en ${wizardData.nombreLote} para cultivo ${wizardData.cultivo} ${wizardData.variedad}`
+      });
+
+      agroStore.addCustomAlert({
+        fincaId: nuevaFinca.id,
+        titulo: `¡Finca ${nuevaFinca.nombre} caracterizada exitosamente!`,
+        mensaje: `Se ha registrado tu predio en Vereda ${nuevaFinca.vereda} con ${wizardData.plantasSembradas.toLocaleString()} plantas de ${wizardData.cultivo} ${wizardData.variedad}.`,
+        nivel: 'info'
+      });
+
+      agroStore.setActiveFarmId(nuevaFinca.id);
+
+      modalTitle.textContent = '¡Finca Configurada con Éxito!';
+      modalBody.innerHTML = `
+        <div class="cafecito-celebration-card">
+          <img src="img/cafecito_hero.png" alt="Cafecito Feliz" class="cafecito-celebration-img">
+          <h3 class="cafecito-celebration-title">¡Qué orgullo cafetero! ${nuevaFinca.nombre} está lista</h3>
+          <p class="cafecito-celebration-desc">
+            Hemos registrado tu finca en <strong>Vereda ${nuevaFinca.vereda}</strong> con el lote <strong>${nuevoLote.nombre}</strong> (${nuevoLote.area} Ha) y el cultivo de <strong>${wizardData.cultivo} ${wizardData.variedad}</strong> (${wizardData.plantasSembradas.toLocaleString()} árboles). Todas las funciones de AgroCaldas ya están operativas para este predio.
+          </p>
+          <button class="btn btn-primary" id="btn-wizard-celebrate-finish" style="background: #15803d; font-weight: 700; width: 100%; padding: 0.85rem; font-size: 1rem;">
+            Ir al Panel de Control de mi Finca →
+          </button>
+        </div>
+      `;
+
+      document.getElementById('btn-wizard-celebrate-finish')?.addEventListener('click', () => {
+        closeModal();
+        this.switchView('dashboard');
+        this.showToast(`¡Bienvenido a ${nuevaFinca.nombre}!`, 'success');
+      });
+    };
+
+    modal.classList.add('active');
+    renderWizardStep();
   }
 
   openFincaModal(fincaId = null) {
@@ -4122,6 +4934,12 @@ class AgroApp {
   showQuickActionMenu() {
     const bodyHtml = `
       <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.85rem; padding: 0.5rem 0;">
+        <button class="btn btn-primary" id="qa-encuesta" style="padding: 1.25rem 0.5rem; flex-direction: column; gap: 0.45rem; grid-column: span 2; background: linear-gradient(135deg, #15803d, #16a34a);">
+          <img src="img/cafecito_avatar_hd.png" alt="Cafecito" style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid #fff;">
+          <strong>+ Encuesta para Añadir Finca</strong>
+          <span style="font-size: 0.78rem; color: #dcfce7;">Caracterización predial paso a paso con Cafecito</span>
+        </button>
+
         <button class="btn btn-secondary" id="qa-cosecha" style="padding: 1.25rem 0.5rem; flex-direction: column; gap: 0.45rem;">
           <span style="font-size: 1.75rem;">☕</span>
           <strong>Nueva Cosecha</strong>
@@ -4149,6 +4967,11 @@ class AgroApp {
     `;
 
     this.openModal('Acciones Rápidas AgroCaldas', bodyHtml, () => true);
+
+    document.getElementById('qa-encuesta')?.addEventListener('click', () => {
+      document.getElementById('global-modal').classList.remove('active');
+      this.openFarmWizardModal();
+    });
 
     document.getElementById('qa-cosecha')?.addEventListener('click', () => {
       document.getElementById('global-modal').classList.remove('active');
