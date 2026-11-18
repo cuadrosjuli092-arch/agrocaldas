@@ -109,17 +109,25 @@ body {
   text-decoration: none;
 }
 
-.brand-logo-icon {
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, var(--primary-700), var(--primary-500));
-  color: #ffffff;
-  border-radius: var(--radius-md);
+.brand-mascot-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fdf8f0;
+  border: 2px solid var(--primary-500);
+  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 10px rgba(22, 163, 74, 0.25);
-  font-size: 1.4rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.brand-mascot-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
 }
 
 .brand-info h1 {
@@ -1295,4 +1303,618 @@ textarea.form-control {
   .weather-chip span.weather-label {
     display: none;
   }
+}
+
+/* ==========================================================================
+   Estilos de Cafecito (Mascota Oficial de AgroCaldas) y Wizard de Fincas
+   ========================================================================== */
+
+/* Banner de Bienvenida con Cafecito */
+.mascot-hero-card {
+  background: linear-gradient(135deg, #14532d 0%, #166534 60%, #15803d 100%);
+  border-radius: var(--radius-xl);
+  color: #ffffff;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 10px 25px -5px rgba(20, 83, 45, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.mascot-hero-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.mascot-hero-content {
+  flex: 1;
+  z-index: 2;
+}
+
+.mascot-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(4px);
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.6rem;
+}
+
+.mascot-hero-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 0.4rem;
+}
+
+.mascot-hero-desc {
+  font-size: 0.88rem;
+  color: #dcfce7;
+  max-width: 580px;
+  line-height: 1.45;
+  margin-bottom: 1rem;
+}
+
+.mascot-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.btn-hero-primary {
+  background: #ffffff;
+  color: #14532d;
+  font-weight: 700;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-hero-primary:hover {
+  background: #f0fdf4;
+  transform: translateY(-2px);
+}
+
+.btn-hero-secondary {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-weight: 600;
+  padding: 0.65rem 1.15rem;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-hero-secondary:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.mascot-hero-image-wrap {
+  width: 145px;
+  height: 165px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.mascot-hero-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25));
+  animation: floatMascot 4s ease-in-out infinite alternate;
+}
+
+@keyframes floatMascot {
+  0% { transform: translateY(0px) rotate(0deg); }
+  100% { transform: translateY(-6px) rotate(1deg); }
+}
+
+/* Globo de Diálogo de Cafecito */
+.cafecito-bubble-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #fcf9f2;
+  border: 2px solid #ecd8be;
+  border-radius: var(--radius-lg);
+  padding: 1.1rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 12px rgba(120, 68, 33, 0.08);
+}
+
+.cafecito-bubble-avatar {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 3px solid #b97b4a;
+  background: #ffffff;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.cafecito-bubble-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cafecito-bubble-text {
+  flex: 1;
+}
+
+.cafecito-bubble-name {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #784421;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cafecito-bubble-msg {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #27211d;
+  line-height: 1.4;
+}
+
+.cafecito-bubble-sub {
+  font-size: 0.8rem;
+  color: #786b62;
+  margin-top: 0.25rem;
+}
+
+/* Asistente Paso a Paso (Wizard) */
+.wizard-progress-bar-wrap {
+  width: 100%;
+  background: #e2e8f0;
+  height: 8px;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.wizard-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+  transition: width 0.35s ease;
+}
+
+.wizard-steps-indicator {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+
+.wizard-step-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.wizard-step-pill.active {
+  color: #166534;
+  font-weight: 800;
+}
+
+/* Opciones seleccionables en el Wizard (Tarjetas visuales táctiles) */
+.wizard-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.wizard-option-card {
+  background: #ffffff;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 0.65rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  user-select: none;
+}
+
+.wizard-option-card:hover {
+  border-color: var(--primary-400);
+  background: var(--primary-50);
+}
+
+.wizard-option-card.selected {
+  border-color: var(--primary-600);
+  background: var(--primary-100);
+  box-shadow: 0 0 0 2px var(--primary-300);
+}
+
+.wizard-option-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.wizard-option-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.wizard-option-card.selected .wizard-option-title {
+  color: var(--primary-900);
+}
+
+.wizard-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.wizard-checkbox-item:hover {
+  background: #f8fafc;
+  border-color: var(--primary-300);
+}
+
+.wizard-checkbox-item.checked {
+  background: var(--primary-50);
+  border-color: var(--primary-500);
+}
+
+.wizard-checkbox-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--primary-600);
+}
+
+/* Optimización móvil para modales tipo Bottom Sheet */
+@media (max-width: 768px) {
+  .mascot-hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem 1rem;
+    gap: 1rem;
+  }
+
+  .mascot-hero-image-wrap {
+    align-self: flex-end;
+    margin-top: -30px;
+    width: 105px;
+    height: 125px;
+  }
+
+  .mascot-hero-title {
+    font-size: 1.25rem;
+  }
+
+  .btn-hero-primary, .btn-hero-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal-card {
+    max-height: 92vh;
+    border-radius: 24px 24px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .modal-overlay.active .modal-card {
+    transform: translateY(0);
+  }
+
+  .form-control, .btn {
+    min-height: 46px; /* Mejor área de toque */
+    font-size: 16px; /* Evita zoom molesto en iOS */
+  }
+
+  .wizard-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+/* ==========================================================================
+   Modo Dispositivo: Simulador Móvil / Vista Celular vs Tablet / PC
+   ========================================================================== */
+
+.device-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  background: #f1f5f9;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.device-mode-toggle:hover {
+  background: var(--primary-50);
+  border-color: var(--primary-400);
+  color: var(--primary-800);
+}
+
+/* Modo Celular en Pantallas de Escritorio / Tablet Grande (Frame de Smartphone) */
+@media (min-width: 769px) {
+  body.device-mode-mobile {
+    background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1.5rem 0;
+  }
+
+  body.device-mode-mobile .app-layout {
+    width: 100%;
+    max-width: 425px;
+    height: 870px;
+    max-height: 94vh;
+    border-radius: 42px;
+    box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.7), 0 0 0 10px #334155, 0 0 0 12px #0f172a;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: var(--bg-main);
+  }
+
+  body.device-mode-mobile .app-sidebar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 82%;
+    transform: translateX(-100%);
+    z-index: 100;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4);
+  }
+
+  body.device-mode-mobile .app-sidebar.open {
+    transform: translateX(0);
+  }
+
+  body.device-mode-mobile .mobile-toggle-btn {
+    display: flex;
+  }
+
+  body.device-mode-mobile .mobile-nav-bar {
+    display: flex;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    border-radius: 0 0 42px 42px;
+  }
+
+  body.device-mode-mobile .app-main {
+    margin-left: 0;
+    padding-bottom: 75px;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  body.device-mode-mobile .content-area {
+    padding: 1rem 0.85rem;
+  }
+
+  body.device-mode-mobile .view-title-group h2 {
+    font-size: 1.35rem;
+  }
+
+  body.device-mode-mobile .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.device-mode-mobile .form-group.col-span-2 {
+    grid-column: span 1;
+  }
+
+  body.device-mode-mobile .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  body.device-mode-mobile .weather-chip span.weather-label {
+    display: none;
+  }
+
+  body.device-mode-mobile .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  body.device-mode-mobile .modal-card {
+    max-height: 88vh;
+    border-radius: 24px 24px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  body.device-mode-mobile .modal-overlay.active .modal-card {
+    transform: translateY(0);
+  }
+}
+
+/* Selector Modal de Dispositivo */
+.device-choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 500px) {
+  .device-choice-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.device-choice-card {
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.device-choice-card:hover {
+  border-color: var(--primary-500);
+  background: var(--primary-50);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.device-choice-card.active {
+  border-color: var(--primary-600);
+  background: var(--primary-100);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25);
+}
+
+.device-choice-icon {
+  font-size: 2.25rem;
+  line-height: 1;
+}
+
+.device-choice-card h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.device-choice-card p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+  margin: 0;
+}
+
+/* Estados Vacíos con Cafecito (Empty States) */
+.cafecito-empty-state {
+  text-align: center;
+  padding: 2.5rem 1.25rem;
+  background: #ffffff;
+  border: 2px dashed #bbf7d0;
+  border-radius: var(--radius-xl);
+  margin: 1rem 0;
+  box-shadow: 0 4px 15px rgba(22, 163, 74, 0.05);
+}
+
+.cafecito-empty-img {
+  width: 125px;
+  height: 125px;
+  object-fit: contain;
+  margin: 0 auto 0.85rem auto;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12));
+}
+
+.cafecito-empty-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #14532d;
+  margin-bottom: 0.35rem;
+}
+
+.cafecito-empty-desc {
+  font-size: 0.88rem;
+  color: #64748b;
+  max-width: 460px;
+  margin: 0 auto 1.25rem auto;
+  line-height: 1.45;
+}
+
+/* Tarjeta de Celebración de Cafecito al Completar Finca */
+.cafecito-celebration-card {
+  text-align: center;
+  padding: 1.5rem 1rem;
+}
+
+.cafecito-celebration-img {
+  width: 135px;
+  height: 135px;
+  object-fit: contain;
+  margin: 0 auto 0.75rem auto;
+  animation: bounceCelebration 1.2s ease infinite alternate;
+}
+
+@keyframes bounceCelebration {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-8px) scale(1.04); }
+}
+
+.cafecito-celebration-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #15803d;
+  margin-bottom: 0.35rem;
+}
+
+.cafecito-celebration-desc {
+  font-size: 0.9rem;
+  color: #334155;
+  line-height: 1.45;
+  margin-bottom: 1.25rem;
 }
