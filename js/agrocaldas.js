@@ -3207,6 +3207,24 @@ class AgroApp {
             </div>
           </div>
         </div>
+
+        <div class="card" style="border: 2px solid #bbf7d0; background: #fafdfa;">
+          <div class="card-header" style="background: #f0fdf4;">
+            <h3>
+              <span style="font-size: 1.25rem;">💬</span>
+              Soporte y Asesoría Técnica
+            </h3>
+            <span class="badge badge-success">WhatsApp 3216342895</span>
+          </div>
+          <div class="card-body">
+            <p style="font-size: 0.88rem; color: #166534; margin-bottom: 1.25rem; line-height: 1.45;">
+              ¿Tienes alguna duda sobre la aplicación, algo no funciona como esperabas o necesitas ayuda caracterizando tu finca en Anserma? Puedes escribirle de inmediato a un asesor técnico por WhatsApp.
+            </p>
+            <a href="https://wa.me/573216342895?text=Hola%2C%20necesito%20ayuda%20o%20soporte%20con%20la%20aplicaci%C3%B3n%20AgroCaldas%20en%20Anserma" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="background: #25d366; text-decoration: none; width: 100%; justify-content: center; font-size: 0.95rem; font-weight: 700; padding: 0.75rem;">
+              <span style="font-size: 1.2rem;">📱</span> Escribir a un Asesor por WhatsApp
+            </a>
+          </div>
+        </div>
       </div>
     `;
 
@@ -4963,6 +4981,12 @@ class AgroApp {
           <strong>Mover Inventario</strong>
           <span style="font-size: 0.74rem; color: #64748b;">Entrada o aplicación</span>
         </button>
+
+        <a href="https://wa.me/573216342895?text=Hola%2C%20necesito%20ayuda%20o%20soporte%20con%20la%20aplicaci%C3%B3n%20AgroCaldas%20en%20Anserma" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="padding: 1.1rem 0.5rem; flex-direction: column; gap: 0.45rem; grid-column: span 2; border-color: #25d366; background: #f0fdf4; text-decoration: none; color: inherit;">
+          <span style="font-size: 1.5rem;">💬</span>
+          <strong style="color: #15803d;">Contactar Asesor por WhatsApp</strong>
+          <span style="font-size: 0.74rem; color: #166534;">¿Falla o duda? Escribe al 321 634 2895</span>
+        </a>
       </div>
     `;
 
